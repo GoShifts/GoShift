@@ -1,3 +1,4 @@
+import { auth_constants } from "./constants";
 import { useForm } from "@mantine/form";
 import {
   TextInput,
@@ -55,9 +56,9 @@ function LogIn() {
   };
 
   return (
-    <Paper radius="md" p="xl">
-      <Text size="lg" fw={500}>
-        Welcome to GoShift
+    <Paper radius={auth_constants.fieldRadius} p="xl">
+      <Text size={auth_constants.textSize} fw={500}>
+        Welcome to GoShift | Login
       </Text>
 
       <Divider label="Login" labelPosition="center" my="lg" />
@@ -73,7 +74,7 @@ function LogIn() {
               form.setFieldValue("email", event.currentTarget.value)
             }
             error={form.errors.email && "Invalid email"}
-            radius="md"
+            radius="sm"
           />
 
           <PasswordInput
@@ -88,7 +89,7 @@ function LogIn() {
               form.errors.password &&
               "Password should include at least 6 characters"
             }
-            radius="md"
+            radius="sm"
           />
         </Stack>
 
@@ -98,7 +99,7 @@ function LogIn() {
               {"Do not have an account? Register"}
             </Anchor>
           </Link>
-          <Button type="submit" radius="xl">
+          <Button type="submit" radius={auth_constants.buttonRadius}>
             {"Login"}
           </Button>
         </Group>
