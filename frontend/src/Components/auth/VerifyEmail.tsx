@@ -55,13 +55,13 @@ function VerifyEmail() {
         <Container size="xs" {...demoProps}>
           {validUrl ? (
             <>
-              <h1>Email address verified successfully</h1>
+              <h1>{auth_constants.verifyEmail.success}</h1>
               <Link to="/login" style={{ textDecoration: "none" }}>
                 <Button radius={auth_constants.buttonRadius}>{"Login"}</Button>
               </Link>
             </>
           ) : (
-            <h1>404 Not Found</h1>
+            <h1>{auth_constants.verifyEmail.four04}</h1>
           )}
         </Container>
       </div>
