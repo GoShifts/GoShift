@@ -16,17 +16,17 @@ export const registerUser = async (req, res) => {
     const url = `${process.env.BASE_URL}auth/${user.id}/verify/${token.token}`;
     await sendEmail(user.email, "Verify Email", url);
 
-    res
-      .status(201)
-      .send({
-        token: generateToken(user._id),
-        message: "An Email sent to your account please verify",
-      });
+    res.status(201).send({
+      token: generateToken(user._id),
+      message: "An Email sent to your account please verify",
+    });
     // res.status(200).json({
     //   token: generateToken(user._id),
     // });
   } catch (error) {
-    res.status(500).json("error: " + error);
+    res.status(500).json({
+      message: "Error! try again",
+    });
   }
 };
 
@@ -56,7 +56,7 @@ export const loginUser = async (req, res) => {
       console.log(user);
       res.status(201).json({
         token: generateToken(user._id),
-        message: "Loged in Successfull",
+        // message: "Loged in Successfull",
       });
     } else {
       res.status(401).send("Invalid Username or Password");
