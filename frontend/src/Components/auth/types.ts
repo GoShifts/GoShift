@@ -15,9 +15,7 @@ export interface SignUpFormValues {
     message: string;
   }
   
-  export interface SignUpProps {
-    // Add any props specific to SignUp component here
-  }
+  export type SignUpProps = Record<string, unknown>;
 
   //Login
   export interface LoginFormValues {
@@ -34,15 +32,11 @@ export interface SignUpFormValues {
     message: string;
   }
   
-  export interface LoginProps {
-    // Add any props specific to Login component here
-  }
+  export type LoginProps = Record<string, unknown>;
 
   //Verify Email
 export interface VerifyEmailMessages {
     success?: string;
     four04?: string;
   }
-  export interface VerifyEmailProps {
-    // Add any props specific to VerifyEmail component here
-  }
+  export type VerifyEmailProps = Record<string, unknown>;
