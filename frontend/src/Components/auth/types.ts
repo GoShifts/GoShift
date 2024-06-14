@@ -15,9 +15,7 @@ export interface SignUpFormValues {
     message: string;
   }
   
-  export interface SignUpProps {
-    // Add any props specific to SignUp component here
-  }
+  export type SignUpProps = Record<string, unknown>;
 
   //Login
   export interface LoginFormValues {
