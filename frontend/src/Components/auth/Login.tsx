@@ -14,6 +14,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { serverUrl } from "../../utils/common";
 import { useState } from "react";
+import { LoginFormValues, LoginErrorMessages, LoginProps } from "./types";
 
 function LogIn() {
   const navigate = useNavigate();

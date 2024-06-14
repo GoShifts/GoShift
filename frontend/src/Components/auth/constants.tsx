@@ -18,4 +18,10 @@ export const auth_constants = {
         title: "Forgot Password",
         email: "Email",
     },
+    verifyEmail: {
+        success: 'Email address verified successfully',
+        notFound: 'Email address not found',
+        title: "Verify Email",
+        email: "Email",
+    },
 }

@@ -14,6 +14,7 @@ import {
 import { Link } from "react-router-dom";
 import { serverUrl } from "../../utils/common";
 import { useState } from "react";
+import { SignUpFormValues, SignUpErrorMessages, SignUpResponse, SignUpProps } from "./types";
 
 function SignUp() {
   const [msg, setMsg] = useState("");
