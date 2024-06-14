@@ -39,6 +39,4 @@ export interface VerifyEmailMessages {
     success?: string;
     four04?: string;
   }
-  export interface VerifyEmailProps {
-    // Add any props specific to VerifyEmail component here
-  }
+  export type VerifyEmailProps = Record<string, unknown>;
