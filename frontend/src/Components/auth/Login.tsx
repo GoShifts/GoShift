@@ -69,7 +69,7 @@ function LogIn() {
           <TextInput
             required
             label="Email"
-            placeholder="hello@mantine.dev"
+            placeholder="hello@goshift.com"
             value={form.values.email}
             onChange={(event) =>
               form.setFieldValue("email", event.currentTarget.value)
