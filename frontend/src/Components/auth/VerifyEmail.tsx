@@ -61,7 +61,7 @@ function VerifyEmail() {
               </Link>
             </>
           ) : (
-            <h1>{auth_constants.verifyEmail.four04}</h1>
+            <h1>{auth_constants.verifyEmail.notFound}</h1>
           )}
         </Container>
       </div>

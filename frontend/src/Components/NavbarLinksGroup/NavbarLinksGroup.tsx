@@ -25,7 +25,7 @@ export function LinksGroup({
   links,
 }: LinksGroupProps) {
   const hasLinks = Array.isArray(links);
-  const [opened, setOpened] = useState(initiallyOpened || false);
+  const [opened, setOpened] = useState(initiallyOpened ?? false);
   const items = (hasLinks ? links : []).map((link) => (
     <Text<"a">
       component="a"
