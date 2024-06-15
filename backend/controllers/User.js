@@ -70,17 +70,18 @@ export const verifyToken = async (req, res) => {
   console.log(req.params);
   try {
     const user = await User.findOne({ _id: req.params.id });
-    console.log("user" + user);
+    // console.log("user" + user);
     if (!user) return res.status(400).send({ message: "Invalid link" });
 
     const token = await Token.findOne({
       userId: user._id,
       token: req.params.token,
     });
-    console.log("token" + token);
+    // console.log("token" + token);
     if (!token) return res.status(400).send({ message: "Invalid link" });
 
-    await User.updateOne({ _id: user._id, verified: true });
+    const response = await User.updateOne({ _id: user._id, verified: true });
+    console.log(response);
     await Token.findOneAndDelete({
       userId: user._id,
       token: req.params.token,
@@ -89,5 +90,68 @@ export const verifyToken = async (req, res) => {
     res.status(200).send({ message: "Email verified successfully" });
   } catch (error) {
     res.status(500).send({ message: "Internal Server Error" });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    console.log(user);
+    if (!user) {
+      return res.send({ message: "User not existed" });
+    }
+    // console.log("before token");
+    // const token = await new Token({
+    //   userId: user._id,
+    //   token: crypto.randomBytes(32).toString("hex"),
+    // }).save();
+    // console.log("after token");
+    // console.log(token);
+    const url = `${process.env.BASE_URL}reset/${user.id}/${token}`;
+    await sendEmail(user.email, "Reset Password", url);
+    return res
+      .status(400)
+      .send({ message: "An Email sent to your account please verify" });
+  } catch (error) {
+    res.status(500).send({ message: "Error Occured! try again" });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  console.log("reset password");
+  try {
+    console.log("try");
+    const { id } = req.params;
+    const { password } = req.body;
+    console.log(id);
+    console.log(token);
+    console.log(password);
+    const token = await Token.findOne({
+      userId: id,
+      token: req.params.token,
+    });
+    jwt.verify(token, process.env.SECRET_KEY, (err, decode) => {
+      console.log("verify");
+      if (!token) {
+        console.log("if");
+        return res.status(500).send(err);
+      } else {
+        console.log("else");
+        const user = User.findByIdAndUpdate(id, { password: password });
+        if (user) {
+          console.log("updated if");
+
+          res.status(200).send({ message: "Password Updated Successfully" });
+        } else {
+          console.log("updated else");
+          res.status(500).send(err);
+        }
+      }
+    });
+    res.status(200).send({ message: "Password Updated Successfully" });
+  } catch (error) {
+    console.log("catch");
+    res.status(500).send({ message: "Error Occured! try again" });
   }
 };

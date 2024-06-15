@@ -7,12 +7,15 @@ import {
   Link,
 } from "react-router-dom";
 import DashboardPage from "./Pages/DashboardPage";
-import SignUpPage from "./Pages/SignUpPage";
-import LogInPage from "./Pages/LogInPage";
+import SignUpPage from "./Pages/auth/SignUpPage";
+import LogInPage from "./Pages/auth/LogInPage";
 import VerifyEmail from "./Components/auth/VerifyEmail";
+import ForgotPasswordPage from "./Pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./Pages/auth/ResetPasswordPage";
 
 function App() {
   const router = createBrowserRouter([
+    // auth routes
     {
       path: "/",
       element: <SignUpPage />,
@@ -29,6 +32,16 @@ function App() {
       path: "/auth/:id/verify/:token",
       element: <VerifyEmail />,
     },
+    {
+      path: "/forgot",
+      element: <ForgotPasswordPage />,
+    },
+    {
+      path: "/reset/:id/:token",
+      element: <ResetPasswordPage />,
+    },
+
+    // shifts routes
   ]);
   return (
     <div className="App">

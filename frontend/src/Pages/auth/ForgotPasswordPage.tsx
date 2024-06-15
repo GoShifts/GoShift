@@ -1,6 +1,6 @@
-import SignUp from "../Components/auth/SignUp";
+import { ForgotPassword } from "../../Components/ForgotPassword/ForgotPassword";
 
-function SignUpPage() {
+function ForgotPasswordPage() {
   return (
     <div
       style={{
@@ -23,10 +23,10 @@ function SignUpPage() {
           margin: "auto",
         }}
       >
-        <SignUp />
+        <ForgotPassword />
       </div>
     </div>
   );
 }
 
-export default SignUpPage;
+export default ForgotPasswordPage;

@@ -1,6 +1,6 @@
-import LogIn from "../Components/auth/Login";
+import ResetPassword from "../../Components/auth/ResetPassword";
 
-function LogInPage() {
+function ResetPasswordPage() {
   return (
     <div
       style={{
@@ -23,10 +23,10 @@ function LogInPage() {
           margin: "auto",
         }}
       >
-        <LogIn />
+        <ResetPassword />
       </div>
     </div>
   );
 }
 
-export default LogInPage;
+export default ResetPasswordPage;

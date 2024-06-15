@@ -1,6 +1,5 @@
 import { useForm } from "@mantine/form";
 import {
-  TextInput,
   PasswordInput,
   Text,
   Paper,
@@ -10,21 +9,20 @@ import {
   Anchor,
   Stack,
 } from "@mantine/core";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { serverUrl } from "../../utils/common";
 import { useState } from "react";
 
-function LogIn() {
+function ResetPassword() {
   const navigate = useNavigate();
+  const { id, token } = useParams();
   const [msg, setMsg] = useState("");
   const form = useForm({
     initialValues: {
-      email: "",
       password: "",
     },
 
     validate: {
-      email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
       password: (val) =>
         val.length <= 6
           ? "Password should include at least 6 characters"
@@ -35,8 +33,10 @@ function LogIn() {
   // Submit Form to database
   const handleFormSubmit = async () => {
     console.log(form.values);
+    console.log(id);
+    console.log(token);
     try {
-      const response = await fetch(`${serverUrl}/auth/login`, {
+      const response = await fetch(`${serverUrl}/auth/reset/${id}/${token}`, {
         method: "POST",
         body: JSON.stringify(form.values),
         headers: { "content-type": "application/json" },
@@ -46,8 +46,7 @@ function LogIn() {
         console.log(data.message);
         setMsg(data.message);
         form.reset();
-      } else {
-        navigate("/dashboard");
+        navigate("/login");
       }
     } catch (error) {
       console.log(error);
@@ -57,29 +56,17 @@ function LogIn() {
   return (
     <Paper radius="md" p="xl">
       <Text size="lg" fw={500}>
-        Welcome to GoShift
+        Reset Paaword
       </Text>
 
-      <Divider label="Login" labelPosition="center" my="lg" />
+      <Divider my="lg" />
 
       <form onSubmit={form.onSubmit(() => handleFormSubmit())}>
         <Stack>
-          <TextInput
-            required
-            label="Email"
-            placeholder="hello@mantine.dev"
-            value={form.values.email}
-            onChange={(event) =>
-              form.setFieldValue("email", event.currentTarget.value)
-            }
-            error={form.errors.email && "Invalid email"}
-            radius="md"
-          />
-
           <PasswordInput
             required
-            label="Password"
-            placeholder="Your password"
+            label="Enter New Password"
+            placeholder="Enter new password"
             value={form.values.password}
             onChange={(event) =>
               form.setFieldValue("password", event.currentTarget.value)
@@ -90,26 +77,16 @@ function LogIn() {
             }
             radius="md"
           />
-          <Link to="/forgot" style={{ textDecoration: "none" }}>
-            <Anchor
-              // onClick={(event) => event.preventDefault()}
-              pt={2}
-              fw={500}
-              fz="xs"
-            >
-              Forgot your password?
-            </Anchor>
-          </Link>
         </Stack>
 
-        <Group justify="space-between" mt="xl">
-          <Link to="/" style={{ textDecoration: "none" }}>
+        <Group justify="right" mt="xl">
+          {/* <Link to="/" style={{ textDecoration: "none" }}>
             <Anchor component="button" type="button" c="dimmed" size="xs">
               {"Do not have an account? Register"}
             </Anchor>
-          </Link>
+          </Link> */}
           <Button type="submit" radius="xl">
-            {"Login"}
+            {"Update"}
           </Button>
         </Group>
         {msg && <p>{msg}</p>}
@@ -118,4 +95,4 @@ function LogIn() {
   );
 }
 
-export default LogIn;
+export default ResetPassword;
