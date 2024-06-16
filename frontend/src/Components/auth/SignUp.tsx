@@ -14,11 +14,11 @@ import {
 import { Link } from "react-router-dom";
 import { serverUrl } from "../../utils/common";
 import { useState } from "react";
-import { SignUpFormValues, SignUpErrorMessages, SignUpResponse, SignUpProps } from "./types";
+import { SignUpFormValues, SignUpResponse } from "./types";
 
-function SignUp() {
-  const [msg, setMsg] = useState("");
-  const form = useForm({
+function SignUp(): JSX.Element {
+  const [msg, setMsg] = useState<string>("");
+  const form = useForm<SignUpFormValues>({
     initialValues: {
       email: "",
       name: "",
@@ -26,10 +26,10 @@ function SignUp() {
     },
 
     validate: {
-      email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
-      password: (val) =>
+      email: (val: string) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
+      password: (val: string) =>
         val.length <= 6
-          ? "Password should include at least 6 characters"
+          ? auth_constants.passwordField.charValidation
           : null,
     },
   });
@@ -43,7 +43,7 @@ function SignUp() {
         body: JSON.stringify(form.values),
         headers: { "content-type": "application/json" },
       });
-      const data = await response.json();
+      const data: SignUpResponse = await response.json();
       if (data) {
         console.log(data);
         form.reset();
@@ -77,19 +77,19 @@ function SignUp() {
           <TextInput
             required
             label="Email"
-            placeholder="hello@mantine.dev"
+            placeholder={auth_constants.emailField.placeholder}
             value={form.values.email}
             onChange={(event) =>
               form.setFieldValue("email", event.currentTarget.value)
             }
-            error={form.errors.email && "Invalid email"}
+            error={form.errors.email && auth_constants.emailField.invalid}
             radius="sm"
           />
 
           <PasswordInput
             required
             label="Password"
-            placeholder="Your password"
+            placeholder={auth_constants.passwordField.placeholder}
             value={form.values.password}
             onChange={(event) =>
               form.setFieldValue("password", event.currentTarget.value)
@@ -105,7 +105,7 @@ function SignUp() {
         <Group justify="space-between" mt="xl">
           <Link to="/login" style={{ textDecoration: "none" }}>
             <Anchor component="button" type="button" c="dimmed" size="xs">
-              {"Already have an account? Login"}
+              {auth_constants.signUp.login}" "{auth_constants.login.title}
             </Anchor>
           </Link>
           <Button type="submit" radius={auth_constants.buttonRadius}>

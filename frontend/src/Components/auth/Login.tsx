@@ -14,28 +14,25 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { serverUrl } from "../../utils/common";
 import { useState } from "react";
-import { LoginFormValues, LoginErrorMessages, LoginProps } from "./types";
+import { LoginFormValues} from "./types";
 
-function LogIn() {
+function LogIn(): JSX.Element {
   const navigate = useNavigate();
-  const [msg, setMsg] = useState("");
-  const form = useForm({
+  const [msg, setMsg] = useState<string>("");
+  const form = useForm<LoginFormValues>({
     initialValues: {
       email: "",
       password: "",
     },
 
     validate: {
-      email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
-      password: (val) =>
-        val.length <= 6
-          ? "Password should include at least 6 characters"
-          : null,
+      email: (val: string) => (val ? null: auth_constants.login.validationError),
+      password: (val: string) => (val ? null: auth_constants.login.validationError),
     },
   });
 
   // Submit Form to database
-  const handleFormSubmit = async () => {
+  const handleFormSubmit = async (): Promise<void> => {
     console.log(form.values);
     try {
       const response = await fetch(`${serverUrl}/auth/login`, {
@@ -43,7 +40,7 @@ function LogIn() {
         body: JSON.stringify(form.values),
         headers: { "content-type": "application/json" },
       });
-      const data = await response.json();
+      const data: { message?: string } = await response.json();
       if (data.message) {
         console.log(data.message);
         setMsg(data.message);
@@ -59,49 +56,49 @@ function LogIn() {
   return (
     <Paper radius={auth_constants.fieldRadius} p="xl">
       <Text size={auth_constants.textSize} fw={500}>
-        Welcome to GoShift | Login
+        {auth_constants.welcome} | {auth_constants.login.title}
       </Text>
 
-      <Divider label="Login" labelPosition="center" my="lg" />
+      <Divider label={auth_constants.login.title} labelPosition="center" my="lg" />
 
       <form onSubmit={form.onSubmit(() => handleFormSubmit())}>
         <Stack>
           <TextInput
             required
             label="Email"
-            placeholder="hello@mantine.dev"
+            placeholder={auth_constants.emailField.placeholder}
             value={form.values.email}
             onChange={(event) =>
               form.setFieldValue("email", event.currentTarget.value)
             }
             error={form.errors.email && "Invalid email"}
-            radius="sm"
+            radius={auth_constants.fieldRadius}
           />
 
           <PasswordInput
             required
             label="Password"
-            placeholder="Your password"
+            placeholder={auth_constants.passwordField.placeholder}
             value={form.values.password}
             onChange={(event) =>
               form.setFieldValue("password", event.currentTarget.value)
             }
             error={
               form.errors.password &&
-              "Password should include at least 6 characters"
+              auth_constants.login.validationError
             }
-            radius="sm"
+            radius={auth_constants.fieldRadius}
           />
         </Stack>
 
         <Group justify="space-between" mt="xl">
           <Link to="/" style={{ textDecoration: "none" }}>
             <Anchor component="button" type="button" c="dimmed" size="xs">
-              {"Do not have an account? Register"}
+              {auth_constants.login.register}
             </Anchor>
           </Link>
           <Button type="submit" radius={auth_constants.buttonRadius}>
-            {"Login"}
+            {auth_constants.login.title}
           </Button>
         </Group>
         {msg && <p>{msg}</p>}
