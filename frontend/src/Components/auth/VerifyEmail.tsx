@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { serverUrl } from "../../utils/common";
 
-function VerifyEmail() {
-  const [validUrl, setValidUrl] = useState(true);
-  const param = useParams();
+function VerifyEmail(): JSX.Element {
+  const [validUrl, setValidUrl] = useState<boolean>(true);
+  const param = useParams<{ id: string; token: string }>();
   const demoProps = {
     bg: "var(--mantine-color-blue-light)",
     h: 500,
@@ -15,13 +15,11 @@ function VerifyEmail() {
 
   useEffect(() => {
     console.log("useEffect");
-    const verifyEmailUrl = async () => {
+    const verifyEmailUrl = async (): Promise<void> => {
       try {
         const response = await fetch(
           `${serverUrl}/auth/${param.id}/verify/${param.token}`
         );
-        // const url = `${serverUrl}/auth/${param.id}/verify/${param.token}`;
-        // await fetch(url);
         console.log(response);
         setValidUrl(true);
       } catch (error) {
@@ -31,13 +29,13 @@ function VerifyEmail() {
     };
     verifyEmailUrl();
   }, [param]);
+
   return (
     <div
       style={{
         position: "absolute",
         width: "100%",
         height: "100%",
-        // backgroundColor: "skyblue",
       }}
     >
       <div
