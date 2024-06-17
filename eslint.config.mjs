@@ -18,6 +18,8 @@ export default [
 			"no-unused-vars": "off", // Disable no-unused-vars for JavaScript
 			"@typescript-eslint/no-unused-vars": "off", // Disable no-unused-vars for TypeScript
 			"no-undef": "off", // Disable no-undef rule
+			"react/react-in-jsx-scope": "off",
+			"react/jsx-uses-react": "off",
 		},
 	},
 ];

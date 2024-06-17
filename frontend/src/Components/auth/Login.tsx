@@ -14,7 +14,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { serverUrl } from "../../utils/common";
 import { useState } from "react";
-import { LoginFormValues} from "./types";
+import { LoginFormValues } from "./types";
 
 function LogIn(): JSX.Element {
   const navigate = useNavigate();
@@ -26,8 +26,8 @@ function LogIn(): JSX.Element {
     },
 
     validate: {
-      email: (val: string) => (val ? null: auth_constants.login.validationError),
-      password: (val: string) => (val ? null: auth_constants.login.validationError),
+      email: (val: string) => (val ? null : auth_constants.login.validationError),
+      password: (val: string) => (val ? null : auth_constants.login.validationError),
     },
   });
 
