@@ -52,9 +52,6 @@ export const loginUser = async (req, res) => {
           .status(400)
           .send({ message: controller_constants.pleaseVerify });
       }
-
-      ///////
-      console.log(user);
       res.status(201).json({
         token: generateToken(user._id),
         // message: "Logged in Successfully",
