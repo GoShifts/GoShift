@@ -2,6 +2,9 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import authRouter from "./routes/Auth.js";
+import buildingRouter from "./routes/Building.js";
+import roomRouter from "./routes/Room.js";
+import staffRouter from "./routes/Staff.js";
 import cors from "cors";
 
 const app = express();
@@ -19,6 +22,9 @@ async function connectDb() {
 }
 
 app.use("/auth", authRouter);
+app.use("/building", buildingRouter);
+app.use("/room", roomRouter);
+app.use("/staff", staffRouter);
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
