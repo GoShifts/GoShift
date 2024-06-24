@@ -1,25 +1,47 @@
-import { Button } from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { StaffTableScroll } from "../Components/Staff/StaffTable/StaffTableScroll";
 import { useEffect, useState } from "react";
 import { serverUrl } from "../utils/common";
+import DataTable, { TableColumn } from "react-data-table-component";
 
 interface StaffState {
   name: string;
   role: string;
 }
 
+const columns: TableColumn<StaffState>[] = [
+  {
+    name: "Name",
+    selector: (row) => row.name,
+    sortable: true,
+  },
+  {
+    name: "Role",
+    selector: (row) => row.role,
+    sortable: true,
+  },
+];
+
 function StaffPage() {
   const navigate = useNavigate();
   const [data, setData] = useState<StaffState[]>([]);
+  const [sortedData, setSortedData] = useState<StaffState[]>([]);
+
+  const handleFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newData = data.filter((row) => {
+      return row.name.toLowerCase().includes(event.target.value.toLowerCase());
+    });
+    setSortedData(newData);
+  };
 
   useEffect(() => {
     async function getAllStaff() {
-      const response = await fetch(`${serverUrl}/staff/all`);
+      const userId = localStorage.getItem("id");
+      const response = await fetch(`${serverUrl}/staff/all/`+ userId);
       const staff = await response.json();
-      console.log(staff);
-      // console.log(staff);
       setData(staff);
+      setSortedData(staff);
     }
     getAllStaff();
   }, []);
@@ -31,7 +53,7 @@ function StaffPage() {
       <div
         style={{
           width: "80%",
-          backgroundColor: "#a1dae6",
+          backgroundColor: "#E9ECEF",
           marginTop: "20px",
           padding: "14px",
         }}
@@ -41,9 +63,9 @@ function StaffPage() {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
+            marginBottom: "20px",
           }}
         >
-          <h3>All Staff</h3>
           <Button
             type="submit"
             radius="xl"
@@ -53,16 +75,21 @@ function StaffPage() {
           >
             {"Add New Staff"}
           </Button>
+          <TextInput placeholder="Search here..." onChange={handleFilter} />
         </div>
         <div style={{ backgroundColor: "whitesmoke" }}>
-          <StaffTableScroll data={data} />
-          {/* {data.map((bul) => (
-          <>
-            <div>{bul.name}</div>
-            <div>{bul.type}</div>
-            <div>{bul.city}</div>
-          </>
-        ))} */}
+          {/* <StaffTableScroll data={data} /> */}
+          {
+            <DataTable
+              title="All Staff"
+              columns={columns}
+              data={sortedData}
+              pagination
+              fixedHeader
+              highlightOnHover
+              striped
+            />
+          }
         </div>
       </div>
     </div>

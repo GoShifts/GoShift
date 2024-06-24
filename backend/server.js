@@ -6,6 +6,7 @@ import buildingRouter from "./routes/Building.js";
 import roomRouter from "./routes/Room.js";
 import staffRouter from "./routes/Staff.js";
 import cors from "cors";
+import environment from "./utils/environment.js";
 
 const app = express();
 dotenv.config();
@@ -17,7 +18,7 @@ app.use(cors());
 // db connection
 connectDb().catch((err) => console.log(err));
 async function connectDb() {
-  await mongoose.connect(process.env.MONGO_URI);
+  await mongoose.connect(environment.MONGO_URI);
   console.log("Database Connected");
 }
 
@@ -26,7 +27,7 @@ app.use("/building", buildingRouter);
 app.use("/room", roomRouter);
 app.use("/staff", staffRouter);
 
-const port = process.env.PORT || 8000;
+const port = environment.PORT || 8000;
 app.listen(port, () => {
   console.log(`app listening on port ${port}`);
 });

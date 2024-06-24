@@ -37,10 +37,12 @@ function AddStaff() {
   // Submit Form to database
   const handleFormSubmit = async () => {
     console.log(form.values);
+    const userId = localStorage.getItem("id");
+    const staffData = { ...form.values, userId: userId };
     try {
       const response = await fetch(`${serverUrl}/staff/add`, {
         method: "POST",
-        body: JSON.stringify(form.values),
+        body: JSON.stringify(staffData),
         headers: { "content-type": "application/json" },
       });
       const data = await response.json();
@@ -63,7 +65,7 @@ function AddStaff() {
       <div
         style={{
           width: "80%",
-          backgroundColor: "#a1dae6",
+          backgroundColor: "#E9ECEF",
           marginTop: "20px",
           padding: "14px",
           display: "flex",

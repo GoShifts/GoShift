@@ -16,6 +16,7 @@ import { serverUrl } from "../../utils/common";
 import { useEffect, useState } from "react";
 
 interface BuildingState {
+  _id: string;
   name: string;
   type: string;
   city: string;
@@ -31,17 +32,20 @@ function AddStaff() {
       type: "",
       status: "",
       bedType: "",
-      building: "",
+      buildingId: "",
     },
   });
 
   // Submit Form to database
   const handleFormSubmit = async () => {
-    console.log(form.values);
+    // console.log(form.values);
+    const userId = localStorage.getItem("id");
+    const roomData = { ...form.values, userId: userId };
+    // return;
     try {
       const response = await fetch(`${serverUrl}/room/add`, {
         method: "POST",
-        body: JSON.stringify(form.values),
+        body: JSON.stringify(roomData),
         headers: { "content-type": "application/json" },
       });
       const data = await response.json();
@@ -59,10 +63,9 @@ function AddStaff() {
 
   useEffect(() => {
     async function getAllBuildings() {
-      const response = await fetch(`${serverUrl}/building/all`);
+      const userId = localStorage.getItem("id");
+      const response = await fetch(`${serverUrl}/building/all/` + userId);
       const buildings = await response.json();
-      console.log(buildings);
-      // console.log(typeof datas);
       setBuildings(buildings);
     }
     getAllBuildings();
@@ -75,7 +78,7 @@ function AddStaff() {
       <div
         style={{
           width: "80%",
-          backgroundColor: "#a1dae6",
+          backgroundColor: "#E9ECEF",
           marginTop: "20px",
           padding: "14px",
           display: "flex",
@@ -133,11 +136,11 @@ function AddStaff() {
                 />
                 <Select
                   label="Building"
-                  data={buildings.map((building) => ({
-                    value: building.name,
+                  data={buildings?.map((building) => ({
+                    value: building._id,
                     label: building.name,
                   }))}
-                  {...form.getInputProps("building")}
+                  {...form.getInputProps("buildingId")}
                 />
               </Stack>
 

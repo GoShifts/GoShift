@@ -3,6 +3,7 @@ import Token from "../models/Token.js";
 import generateToken from "../utils/common.js";
 import crypto from "crypto";
 import sendEmail from "../utils/sendEmail.js";
+// import db from "mongo";
 
 export const registerUser = async (req, res) => {
   console.log(req.body);
@@ -15,6 +16,7 @@ export const registerUser = async (req, res) => {
     }).save();
     const url = `${process.env.BASE_URL}auth/${user.id}/verify/${token.token}`;
     await sendEmail(user.email, "Verify Email", url);
+    // console.log(user._id);
 
     res.status(201).send({
       token: generateToken(user._id),
@@ -53,8 +55,9 @@ export const loginUser = async (req, res) => {
       }
 
       ///////
-      console.log(user);
+      // console.log(user);
       res.status(201).json({
+        userId: user._id,
         token: generateToken(user._id),
         // message: "Loged in Successfull",
       });
@@ -70,18 +73,25 @@ export const verifyToken = async (req, res) => {
   console.log(req.params);
   try {
     const user = await User.findOne({ _id: req.params.id });
-    // console.log("user" + user);
+    console.log("user" + user);
     if (!user) return res.status(400).send({ message: "Invalid link" });
 
     const token = await Token.findOne({
       userId: user._id,
       token: req.params.token,
     });
-    // console.log("token" + token);
+    console.log("token" + token);
     if (!token) return res.status(400).send({ message: "Invalid link" });
 
-    const response = await User.updateOne({ _id: user._id, verified: true });
-    console.log(response);
+    // const response = await User.updateOne({ _id: user._id, verified: true });
+    // console.log("upadted: "+response);
+    // await Token.findOneAndDelete({
+    //   userId: user._id,
+    //   token: req.params.token,
+    // });
+
+    await User.updateOne({ _id: user._id }, { $set: { verified: true } });
+    console.log("updated");
     await Token.findOneAndDelete({
       userId: user._id,
       token: req.params.token,
@@ -101,14 +111,15 @@ export const forgotPassword = async (req, res) => {
     if (!user) {
       return res.send({ message: "User not existed" });
     }
-    // console.log("before token");
-    // const token = await new Token({
-    //   userId: user._id,
-    //   token: crypto.randomBytes(32).toString("hex"),
-    // }).save();
-    // console.log("after token");
-    // console.log(token);
-    const url = `${process.env.BASE_URL}reset/${user.id}/${token}`;
+    console.log("before token");
+    console.log(user._id.toHexString());
+    const token = await new Token({
+      userId: user._id,
+      token: crypto.randomBytes(32).toString("hex"),
+    }).save();
+    console.log("after token");
+    console.log(token);
+    const url = `${process.env.BASE_URL}reset/${user.id}/${token.token}`;
     await sendEmail(user.email, "Reset Password", url);
     return res
       .status(400)

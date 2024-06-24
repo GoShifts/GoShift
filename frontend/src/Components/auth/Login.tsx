@@ -12,9 +12,13 @@ import {
 } from "@mantine/core";
 import { Link, useNavigate } from "react-router-dom";
 import { serverUrl } from "../../utils/common";
-import { useState } from "react";
+import React, { useState } from "react";
 
-function LogIn() {
+interface Props {
+  setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function LogIn({ setIsAuth }: Props) {
   const navigate = useNavigate();
   const [msg, setMsg] = useState("");
   const form = useForm({
@@ -34,20 +38,23 @@ function LogIn() {
 
   // Submit Form to database
   const handleFormSubmit = async () => {
-    console.log(form.values);
+    // console.log(form.values);
     try {
       const response = await fetch(`${serverUrl}/auth/login`, {
         method: "POST",
         body: JSON.stringify(form.values),
         headers: { "content-type": "application/json" },
       });
-      const data = await response.json();
-      if (data.message) {
-        console.log(data.message);
-        setMsg(data.message);
+      const user = await response.json();
+      if (user.message) {
+        console.log(user.message);
+        setMsg(user.message);
         form.reset();
       } else {
-        navigate("/dashboard");
+        localStorage.setItem("id", user.userId);
+        localStorage.setItem("token", user.token);
+        setIsAuth(true);
+        navigate("/");
       }
     } catch (error) {
       console.log(error);
@@ -103,7 +110,7 @@ function LogIn() {
         </Stack>
 
         <Group justify="space-between" mt="xl">
-          <Link to="/" style={{ textDecoration: "none" }}>
+          <Link to="/register" style={{ textDecoration: "none" }}>
             <Anchor component="button" type="button" c="dimmed" size="xs">
               {"Do not have an account? Register"}
             </Anchor>

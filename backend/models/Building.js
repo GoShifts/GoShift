@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
+import User from "./User.js";
 
 const buildingSchema = new Schema(
   {
@@ -9,10 +10,10 @@ const buildingSchema = new Schema(
     city: { type: String, required: true },
     street: { type: String, required: true },
     zip: { type: String, required: true },
-    // userId: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: User,
-    // },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: User,
+    },
   }
   //   { timestamps: true }
 );

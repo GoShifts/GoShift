@@ -1,9 +1,10 @@
-import { Button } from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
 import { BuildingTable } from "../Components/Building/BuildingTable/BuildingTable";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { serverUrl } from "../utils/common";
 import { BuildingTableScroll } from "../Components/Building/BuildingTableScroll/BuildingTableScroll";
+import DataTable, { TableColumn } from "react-data-table-component";
 
 interface BuildingState {
   name: string;
@@ -11,70 +12,45 @@ interface BuildingState {
   city: string;
 }
 
+const columns: TableColumn<BuildingState>[] = [
+  {
+    name: "Name",
+    selector: (row) => row.name,
+    sortable: true,
+  },
+  {
+    name: "Type",
+    selector: (row) => row.type,
+    sortable: true,
+  },
+  {
+    name: "City",
+    selector: (row) => row.city,
+    sortable: true,
+  },
+];
+
 function BuildingPage() {
   const navigate = useNavigate();
   const [data, setData] = useState<BuildingState[]>([]);
-  // const { good, setGood } = useState(faslse);
-  // const datas = [
-  //   {
-  //     // _id: 1,
-  //     name: "Eabox",
-  //     type: "Kirsten",
-  //     // floors: 1,
-  //     // street: "8 Claremont Center",
-  //     city: "Kafr Zaytā",
-  //     // state: "Devi",
-  //     // zipcode: "81",
-  //   },
-  //   {
-  //     // _id: 2,
-  //     name: "Eimbee",
-  //     type: "Pen",
-  //     // floors: 2,
-  //     // street: "87167 La Follette Pass",
-  //     city: "Lifuta",
-  //     // state: "Frederique",
-  //     // zipcode: "17",
-  //   },
-  //   {
-  //     // _id: 3,
-  //     name: "Trilia",
-  //     type: "Dill",
-  //     // floors: 3,
-  //     // street: "9403 Buena Vista Avenue",
-  //     city: "Oslo",
-  //     // state: "Reinold",
-  //     // zipcode: "1052",
-  //   },
-  //   {
-  //     // _id: 4,
-  //     name: "Gabcube",
-  //     type: "Willey",
-  //     // floors: 4,
-  //     // street: "1020 Knutson Court",
-  //     city: "Dangjiaxian",
-  //     // state: "Cesaro",
-  //     // zipcode: "4339",
-  //   },
-  //   {
-  //     // _id: 5,
-  //     name: "Yakijo",
-  //     type: "Myrtia",
-  //     // floors: 5,
-  //     // street: "9 Colorado Crossing",
-  //     city: "Togitsu",
-  //     // state: "Caressa",
-  //     // zipcode: "15",
-  //   },
-  // ];
+  const [sortedData, setSortedData] = useState<BuildingState[]>([]);
+
+  const handleFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newData = data.filter((row) => {
+      return row.name.toLowerCase().includes(event.target.value.toLowerCase());
+    });
+    setSortedData(newData);
+  };
 
   useEffect(() => {
     async function getAllBuildings() {
-      const response = await fetch(`${serverUrl}/building/all`);
+      const userId = localStorage.getItem("id");
+      // console.log(userId);
+      const response = await fetch(`${serverUrl}/building/all/` + userId);
       const buildings = await response.json();
-      console.log(buildings);
-      // console.log(typeof datas);
+      // console.log(buildings);
       setData(buildings);
+      setSortedData(buildings);
     }
     getAllBuildings();
   }, []);
@@ -86,7 +62,7 @@ function BuildingPage() {
       <div
         style={{
           width: "80%",
-          backgroundColor: "#a1dae6",
+          backgroundColor: "#E9ECEF",
           marginTop: "20px",
           padding: "14px",
         }}
@@ -96,9 +72,9 @@ function BuildingPage() {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
+            marginBottom: "20px",
           }}
         >
-          <h3>All Buildings</h3>
           <Button
             type="submit"
             radius="xl"
@@ -108,17 +84,22 @@ function BuildingPage() {
           >
             {"Add New Building"}
           </Button>
+          <TextInput placeholder="Search here..." onChange={handleFilter} />
         </div>
         <div style={{ backgroundColor: "whitesmoke" }}>
-          <BuildingTableScroll data={data} />
-          {/* <BuildingTable data={data} /> */}
-          {/* {data.map((bul) => (
-            <>
-              <div>{bul.name}</div>
-              <div>{bul.type}</div>
-              <div>{bul.city}</div>
-            </>
-          ))} */}
+          {/* {data ? <BuildingTableScroll data={data} /> : "Error"} */}
+          {/* {data ? "data" : "Error"} */}
+          {
+            <DataTable
+              title="All Buildings"
+              columns={columns}
+              data={sortedData}
+              pagination
+              fixedHeader
+              highlightOnHover
+              striped
+            />
+          }
         </div>
       </div>
     </div>

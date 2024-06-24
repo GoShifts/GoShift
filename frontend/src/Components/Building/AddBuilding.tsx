@@ -17,11 +17,13 @@ function AddBuilding() {
   });
 
   const handleFormSubmit = async () => {
-    console.log(form.values);
+    const userId = localStorage.getItem("id");
+    const buildingData = { ...form.values, userId: userId };
+    // console.log(buildingData);
     try {
       const response = await fetch(`${serverUrl}/building/add`, {
         method: "POST",
-        body: JSON.stringify(form.values),
+        body: JSON.stringify(buildingData),
         headers: { "content-type": "application/json" },
       });
       const data = await response.json();
@@ -30,13 +32,6 @@ function AddBuilding() {
       } else {
         console.log("error");
       }
-      //   if (data.message) {
-      //     console.log(data.message);
-      //     // setMsg(data.message);
-      //     form.reset();
-      //   } else {
-      //     navigate("/dashboard");
-      //   }
     } catch (error) {
       console.log(error);
     }
@@ -49,7 +44,7 @@ function AddBuilding() {
       <div
         style={{
           width: "80%",
-          backgroundColor: "#a1dae6",
+          backgroundColor: "#E9ECEF",
           marginTop: "20px",
           padding: "14px",
           display: "flex",

@@ -1,29 +1,68 @@
-import { Button } from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
-import { StaffTableScroll } from "../Components/Staff/StaffTable/StaffTableScroll";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { serverUrl } from "../utils/common";
 import { RoomTableScroll } from "../Components/Room/RoomTable/RoomTableScroll";
+import DataTable, { TableColumn } from "react-data-table-component";
 
 interface RoomState {
   number: string;
   type: string;
   status: string;
   bedType: string;
-  building: string;
+  buildingId: string;
 }
+
+const columns: TableColumn<RoomState>[] = [
+  {
+    name: "Number",
+    selector: (row) => row.number,
+    sortable: true,
+  },
+  {
+    name: "Type",
+    selector: (row) => row.type,
+    sortable: true,
+  },
+  {
+    name: "Status",
+    selector: (row) => row.status,
+    sortable: true,
+  },
+  {
+    name: "Bed Type",
+    selector: (row) => row.bedType,
+    sortable: true,
+  },
+  {
+    name: "Building",
+    selector: (row) => row.buildingId,
+    sortable: true,
+  },
+];
 
 function RoomPage() {
   const navigate = useNavigate();
   const [data, setData] = useState<RoomState[]>([]);
+  const [sortedData, setSortedData] = useState<RoomState[]>([]);
+
+  const handleFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newData = data.filter((row) => {
+      return row.buildingId
+        .toLowerCase()
+        .includes(event.target.value.toLowerCase());
+    });
+    setSortedData(newData);
+  };
 
   useEffect(() => {
     async function getAllRooms() {
-      const response = await fetch(`${serverUrl}/room/all`);
+      const userId = localStorage.getItem("id");
+      const response = await fetch(`${serverUrl}/room/all/` + userId);
       const room = await response.json();
       console.log(room);
-      // console.log(staff);
       setData(room);
+      setSortedData(room);
     }
     getAllRooms();
   }, []);
@@ -35,7 +74,7 @@ function RoomPage() {
       <div
         style={{
           width: "80%",
-          backgroundColor: "#a1dae6",
+          backgroundColor: "#E9ECEF",
           marginTop: "20px",
           padding: "14px",
         }}
@@ -45,9 +84,9 @@ function RoomPage() {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
+            marginBottom: "20px",
           }}
         >
-          <h3>All Rooms</h3>
           <Button
             type="submit"
             radius="xl"
@@ -57,17 +96,21 @@ function RoomPage() {
           >
             {"Add New Room"}
           </Button>
+          <TextInput placeholder="Search here..." onChange={handleFilter} />
         </div>
         <div style={{ backgroundColor: "whitesmoke" }}>
-          <RoomTableScroll data={data} />
-          {/* <StaffTableScroll data={data} /> */}
-          {/* {data.map((bul) => (
-          <>
-            <div>{bul.name}</div>
-            <div>{bul.type}</div>
-            <div>{bul.city}</div>
-          </>
-        ))} */}
+          {/* <RoomTableScroll data={data} /> */}
+          {
+            <DataTable
+              title="All Rooms"
+              columns={columns}
+              data={sortedData}
+              pagination
+              fixedHeader
+              highlightOnHover
+              striped
+            />
+          }
         </div>
       </div>
     </div>

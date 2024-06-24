@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
+import Building from "./Building.js";
+import User from "./User.js";
 
 const roomSchema = new Schema(
   {
@@ -7,11 +9,14 @@ const roomSchema = new Schema(
     type: { type: String, required: true },
     status: { type: String, required: true },
     bedType: { type: String, required: true },
-    building: { type: String, required: true },
-    // userId: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: User,
-    // },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: User,
+    },
+    buildingId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: Building,
+    },
   }
   //   { timestamps: true }
 );

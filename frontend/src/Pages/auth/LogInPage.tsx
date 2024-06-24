@@ -1,6 +1,10 @@
 import LogIn from "../../Components/auth/Login";
 
-function LogInPage() {
+interface Props {
+  setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function LogInPage({setIsAuth}:Props) {
   return (
     <div
       style={{
@@ -23,7 +27,7 @@ function LogInPage() {
           margin: "auto",
         }}
       >
-        <LogIn />
+        <LogIn setIsAuth={setIsAuth} />
       </div>
     </div>
   );

@@ -1,19 +1,12 @@
 import "./App.css";
 import "@mantine/core/styles.css";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Route,
-  Link,
-  Outlet,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import DashboardPage from "./Pages/DashboardPage";
 import SignUpPage from "./Pages/auth/SignUpPage";
 import LogInPage from "./Pages/auth/LogInPage";
 import VerifyEmail from "./Components/auth/VerifyEmail";
 import ForgotPasswordPage from "./Pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./Pages/auth/ResetPasswordPage";
-import { NavbarNested } from "./Components/NavbarNested/NavbarNested";
 import { Header } from "./Components/Header/Header";
 import ShiftPage from "./Pages/ShiftPage";
 import StaffPage from "./Pages/StaffPage";
@@ -22,12 +15,17 @@ import AddBuilding from "./Components/Building/AddBuilding";
 import AddStaff from "./Components/Staff/AddStaff";
 import RoomPage from "./Pages/RoomPage";
 import AddRoom from "./Components/Room/AddRoom";
+import { useEffect, useState } from "react";
+import Protected from "./Components/auth/Protected";
+import AddShift from "./Components/Shift/AddShift";
 
 function App() {
+  const [isAuth, setIsAuth] = useState(true);
+
   const Layout = () => {
     return (
       <div className="app">
-        <Header />
+        <Header setIsAuth={setIsAuth} />
         <Outlet />
       </div>
     );
@@ -36,40 +34,82 @@ function App() {
   const router = createBrowserRouter([
     // auth routes
     {
+      // exact,
       path: "/",
       element: <Layout />,
       children: [
         {
-          path: "/dashboard",
-          element: <DashboardPage />,
+          path: "/",
+          // exact,
+          element: (
+            <Protected isAuth={isAuth}>
+              <DashboardPage />
+            </Protected>
+          ),
         },
         {
           path: "/shifts",
-          element: <ShiftPage />,
+          element: (
+            <Protected isAuth={isAuth}>
+              <ShiftPage />
+            </Protected>
+          ),
+        },
+        {
+          path: "/shifts/add",
+          element: (
+            <Protected isAuth={isAuth}>
+              <AddShift />
+            </Protected>
+          ),
         },
         {
           path: "/rooms",
-          element: <RoomPage />,
+          element: (
+            <Protected isAuth={isAuth}>
+              <RoomPage />
+            </Protected>
+          ),
         },
         {
           path: "/room/add",
-          element: <AddRoom />,
+          element: (
+            <Protected isAuth={isAuth}>
+              <AddRoom />
+            </Protected>
+          ),
         },
         {
           path: "/staff",
-          element: <StaffPage />,
+          element: (
+            <Protected isAuth={isAuth}>
+              <StaffPage />
+            </Protected>
+          ),
         },
         {
           path: "/staff/add",
-          element: <AddStaff />,
+          element: (
+            <Protected isAuth={isAuth}>
+              <AddStaff />
+            </Protected>
+          ),
         },
         {
           path: "/building",
-          element: <BuildingPage />,
+          element: (
+            <Protected isAuth={isAuth}>
+              <BuildingPage />
+            </Protected>
+          ),
         },
         {
           path: "/building/add",
-          element: <AddBuilding />,
+          element: (
+            <Protected isAuth={isAuth}>
+              <AddBuilding />
+            </Protected>
+          ),
         },
       ],
     },
@@ -79,8 +119,12 @@ function App() {
     },
     {
       path: "/login",
-      element: <LogInPage />,
+      element: <LogInPage setIsAuth={setIsAuth} />,
     },
+    // {
+    //   path: "/logout",
+    //   element: <LogOut setIsAuth={setIsAuth} />,
+    // },
     {
       path: "/auth/:id/verify/:token",
       element: <VerifyEmail />,
@@ -96,6 +140,10 @@ function App() {
 
     // shifts routes
   ]);
+
+  useEffect(() => {
+    console.log("App Component");
+  }, []);
   return (
     <div>
       <RouterProvider router={router} />

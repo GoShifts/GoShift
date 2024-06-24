@@ -167,7 +167,7 @@ type BuildingTableType = {
 export function BuildingTableScroll({ data }: BuildingTableType) {
   const [scrolled, setScrolled] = useState(false);
 
-  const rows = data.map((row) => (
+  const rows = data?.map((row) => (
     <Table.Tr key={row.name}>
       <Table.Td>{row.name}</Table.Td>
       <Table.Td>{row.type}</Table.Td>

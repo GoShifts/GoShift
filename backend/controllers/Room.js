@@ -11,8 +11,10 @@ export const addRoom = async (req, res) => {
 };
 export const allRooms = async (req, res) => {
   console.log("all rooms");
+  const { id } = req.params;
+
   try {
-    const room = await Room.find();
+    const room = await Room.find({ userId: id });
     // const buildings = await doc.JSON();
     // console.log(typeof buildings);
     res.status(200).json(room);

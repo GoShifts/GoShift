@@ -11,8 +11,9 @@ export const addStaff = async (req, res) => {
 };
 export const allStaff = async (req, res) => {
   console.log("all staff");
+  const { id } = req.params;
   try {
-    const staff = await Staff.find({}).select("name role");
+    const staff = await Staff.find({ userId: id }).select("name role");
     console.log(staff);
     res.status(200).json(staff);
   } catch (error) {
