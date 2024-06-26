@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 import Staff from "./Staff.js";
 import Building from "./Building.js";
 
-const staffSchema = new Schema(
+const shiftSchema = new Schema(
   {
     date: { type: Date, required: true },
     time: { type: String, required: true },
@@ -27,6 +27,6 @@ const staffSchema = new Schema(
   //   { timestamps: true }
 );
 
-const Staff = mongoose.model("Staff", staffSchema);
+const Shift = mongoose.model("Shift", shiftSchema);
 
-export default Staff;
+export default Shift;

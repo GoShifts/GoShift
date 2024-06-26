@@ -14,9 +14,7 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
-  <MantineProvider theme={theme}>
-    {/* <Provider store={store}> */}
-    <App />
-    {/* </Provider> */}
-  </MantineProvider>
+    <MantineProvider theme={theme}>
+      <App />
+    </MantineProvider>
 );

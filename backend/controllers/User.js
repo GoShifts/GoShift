@@ -3,6 +3,8 @@ import Token from "../models/Token.js";
 import generateToken from "../utils/common.js";
 import crypto from "crypto";
 import sendEmail from "../utils/sendEmail.js";
+import environment from "../utils/environment.js";
+import bcrypt from "bcrypt";
 // import db from "mongo";
 
 export const registerUser = async (req, res) => {
@@ -10,12 +12,13 @@ export const registerUser = async (req, res) => {
   try {
     const newUser = new User(req.body);
     const user = await newUser.save();
-    const token = await new Token({
-      userId: user._id,
-      token: crypto.randomBytes(32).toString("hex"),
-    }).save();
-    const url = `${process.env.BASE_URL}auth/${user.id}/verify/${token.token}`;
-    await sendEmail(user.email, "Verify Email", url);
+    // no signup option therefor no email verification required
+    // const token = await new Token({
+    //   userId: user._id,
+    //   token: crypto.randomBytes(32).toString("hex"),
+    // }).save();
+    // const url = `${process.env.BASE_URL}auth/${user.id}/verify/${token.token}`;
+    // await sendEmail(user.email, "Verify Email", url);
     // console.log(user._id);
 
     res.status(201).send({
@@ -38,21 +41,21 @@ export const loginUser = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (user && (await user.matchPassword(password))) {
-      if (!user.verified) {
-        let token = await Token.findOne({ userId: user._id });
-        if (!token) {
-          token = await new Token({
-            userId: user._id,
-            token: crypto.randomBytes(32).toString("hex"),
-          }).save();
-          const url = `${process.env.BASE_URL}auth/${user.id}/verify/${token.token}`;
-          await sendEmail(user.email, "Verify Email", url);
-        }
+      // if (!user.verified) {
+      //   let token = await Token.findOne({ userId: user._id });
+      //   if (!token) {
+      //     token = await new Token({
+      //       userId: user._id,
+      //       token: crypto.randomBytes(32).toString("hex"),
+      //     }).save();
+      //     const url = `${process.env.BASE_URL}auth/${user.id}/verify/${token.token}`;
+      //     await sendEmail(user.email, "Verify Email", url);
+      //   }
 
-        return res
-          .status(400)
-          .send({ message: "An Email sent to your account please verify" });
-      }
+      //   return res
+      //     .status(400)
+      //     .send({ message: "An Email sent to your account please verify" });
+      // }
 
       ///////
       // console.log(user);
@@ -62,7 +65,8 @@ export const loginUser = async (req, res) => {
         // message: "Loged in Successfull",
       });
     } else {
-      res.status(401).send("Invalid Username or Password");
+      // console.log("Invalid");
+      res.status(401).json({ message: "Invalid Username or Password" });
     }
   } catch (error) {
     res.status(500).json("catch " + error);
@@ -111,15 +115,17 @@ export const forgotPassword = async (req, res) => {
     if (!user) {
       return res.send({ message: "User not existed" });
     }
+    // const userId = user._id.toString();
     console.log("before token");
-    console.log(user._id.toHexString());
+    // console.log(userId);
     const token = await new Token({
       userId: user._id,
       token: crypto.randomBytes(32).toString("hex"),
-    }).save();
+    });
+    await token.save();
     console.log("after token");
     console.log(token);
-    const url = `${process.env.BASE_URL}reset/${user.id}/${token.token}`;
+    const url = `${environment.BASE_URL}reset/${user._id}/${token.token}`;
     await sendEmail(user.email, "Reset Password", url);
     return res
       .status(400)
@@ -130,37 +136,43 @@ export const forgotPassword = async (req, res) => {
 };
 
 export const resetPassword = async (req, res) => {
-  console.log("reset password");
+  // console.log("reset password");
   try {
     console.log("try");
     const { id } = req.params;
     const { password } = req.body;
-    console.log(id);
-    console.log(token);
-    console.log(password);
+    // console.log(id);
+    // console.log(req.params.token);
+    // console.log(password);
     const token = await Token.findOne({
       userId: id,
       token: req.params.token,
     });
-    jwt.verify(token, process.env.SECRET_KEY, (err, decode) => {
-      console.log("verify");
-      if (!token) {
-        console.log("if");
-        return res.status(500).send(err);
-      } else {
-        console.log("else");
-        const user = User.findByIdAndUpdate(id, { password: password });
-        if (user) {
-          console.log("updated if");
+    console.log(token);
+    if (!token) {
+      // console.log("if");
+      return res.status(500).send(err);
+    } else {
+      // console.log("else");
+      const salt = await bcrypt.genSalt(10);
+      const newPassword = await bcrypt.hash(password, salt);
 
-          res.status(200).send({ message: "Password Updated Successfully" });
-        } else {
-          console.log("updated else");
-          res.status(500).send(err);
+      const user = User.findByIdAndUpdate(
+        { _id: id },
+        { password: newPassword },
+        {
+          new: true,
         }
+      );
+      console.log(user);
+      if (user) {
+        // console.log("updated if");
+        res.status(200).send({ message: "Password Updated Successfully" });
+      } else {
+        // console.log("updated else");
+        res.status(500).send(err);
       }
-    });
-    res.status(200).send({ message: "Password Updated Successfully" });
+    }
   } catch (error) {
     console.log("catch");
     res.status(500).send({ message: "Error Occured! try again" });

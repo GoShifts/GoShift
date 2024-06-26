@@ -51,7 +51,7 @@ export function Header({ setIsAuth }: Props) {
             </Link>
           </Group>
 
-          <Group visibleFrom="sm">
+          <Group visibleFrom="sm" style={{ padding: "20px" }}>
             <Button radius="xl" onClick={handleLaogout}>
               Log Out
             </Button>

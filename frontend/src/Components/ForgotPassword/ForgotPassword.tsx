@@ -16,9 +16,12 @@ import { useForm } from "@mantine/form";
 import { Link, useNavigate } from "react-router-dom";
 import { serverUrl } from "../../utils/common";
 import { useState } from "react";
+import { Slide, toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export function ForgotPassword() {
   const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const form = useForm({
     initialValues: {
@@ -32,6 +35,7 @@ export function ForgotPassword() {
 
   const handleFormSubmit = async () => {
     console.log("Forgot Password");
+    setLoading(true);
     try {
       const response = await fetch(`${serverUrl}/auth/forgot`, {
         method: "POST",
@@ -41,13 +45,16 @@ export function ForgotPassword() {
       const data = await response.json();
       if (data.message) {
         console.log(data.message);
-        setMsg(data.message);
+        // setMsg(data.message);
+        toast(data.message);
         form.reset();
+        setLoading(false);
       }
       // else {
       //   navigate("/dashboard");
       // }
     } catch (error) {
+      setLoading(false);
       console.log(error);
     }
   };
@@ -86,11 +93,30 @@ export function ForgotPassword() {
               </Link>
             </Center>
           </Anchor>
-          <Button type="submit" className={classes.control}>
-            Send reset Link
-          </Button>
+          {loading ? (
+            ""
+          ) : (
+            <Button type="submit" className={classes.control}>
+              Send reset Link
+            </Button>
+          )}
         </Group>
         {msg && <p>{msg}</p>}
+        <ToastContainer
+          position="bottom-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          // transition: Bounce,
+        />
+        {/* Same as */}
+        <ToastContainer />
       </form>
     </Paper>
   );

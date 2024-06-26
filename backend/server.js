@@ -5,6 +5,7 @@ import authRouter from "./routes/Auth.js";
 import buildingRouter from "./routes/Building.js";
 import roomRouter from "./routes/Room.js";
 import staffRouter from "./routes/Staff.js";
+import shiftRouter from "./routes/Shift.js";
 import cors from "cors";
 import environment from "./utils/environment.js";
 
@@ -26,6 +27,7 @@ app.use("/auth", authRouter);
 app.use("/building", buildingRouter);
 app.use("/room", roomRouter);
 app.use("/staff", staffRouter);
+app.use("/shift", shiftRouter);
 
 const port = environment.PORT || 8000;
 app.listen(port, () => {

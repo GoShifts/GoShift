@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { serverUrl } from "../utils/common";
 import { Button, TextInput } from "@mantine/core";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import ShiftDetail from "../Components/Shift/ShiftDetail";
 
 interface ShiftState {
+  _id: string;
   number: string;
   date: string;
   time: string;
@@ -30,21 +32,6 @@ const columns: TableColumn<ShiftState>[] = [
     selector: (row) => row.buildingId,
     sortable: true,
   },
-  {
-    name: "Room",
-    selector: (row) => row.roomId,
-    sortable: true,
-  },
-  {
-    name: "Doctor",
-    selector: (row) => row.doctor,
-    sortable: true,
-  },
-  {
-    name: "Nurses",
-    selector: (row) => row.nurses,
-    sortable: true,
-  },
 ];
 
 function ShiftPage() {
@@ -61,16 +48,24 @@ function ShiftPage() {
     setSortedData(newData);
   };
 
+  // Click handler for shift detail
+  function handleRowClicked(row: ShiftState) {
+    // return <ShiftDetail shift={row} />;
+    const shiftId = row._id;
+    console.log(shiftId);
+    navigate(`/shift/${shiftId}`);
+  }
+
   useEffect(() => {
-    async function getAllRooms() {
-      const userId = localStorage.getItem("id");
-      const response = await fetch(`${serverUrl}/room/all/` + userId);
-      const room = await response.json();
-      console.log(room);
-      setData(room);
-      setSortedData(room);
+    async function getAllShifts() {
+      // const userId = localStorage.getItem("id");
+      const response = await fetch(`${serverUrl}/shift/all`);
+      const shift = await response.json();
+      // console.log(shift);
+      setData(shift);
+      setSortedData(shift);
     }
-    getAllRooms();
+    getAllShifts();
   }, []);
 
   return (
@@ -82,7 +77,7 @@ function ShiftPage() {
           width: "80%",
           backgroundColor: "#E9ECEF",
           marginTop: "20px",
-          padding:"14px"
+          padding: "14px",
         }}
       >
         <div
@@ -115,6 +110,7 @@ function ShiftPage() {
               fixedHeader
               highlightOnHover
               striped
+              onRowClicked={handleRowClicked}
             />
           }
         </div>

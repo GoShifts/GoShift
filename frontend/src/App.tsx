@@ -18,6 +18,7 @@ import AddRoom from "./Components/Room/AddRoom";
 import { useEffect, useState } from "react";
 import Protected from "./Components/auth/Protected";
 import AddShift from "./Components/Shift/AddShift";
+import ShiftDetail from "./Components/Shift/ShiftDetail";
 
 function App() {
   const [isAuth, setIsAuth] = useState(true);
@@ -60,6 +61,14 @@ function App() {
           element: (
             <Protected isAuth={isAuth}>
               <AddShift />
+            </Protected>
+          ),
+        },
+        {
+          path: "/shift/:id",
+          element: (
+            <Protected isAuth={isAuth}>
+              <ShiftDetail />
             </Protected>
           ),
         },
@@ -113,10 +122,10 @@ function App() {
         },
       ],
     },
-    {
-      path: "/register",
-      element: <SignUpPage />,
-    },
+    // {
+    //   path: "/register",
+    //   element: <SignUpPage />,
+    // },
     {
       path: "/login",
       element: <LogInPage setIsAuth={setIsAuth} />,

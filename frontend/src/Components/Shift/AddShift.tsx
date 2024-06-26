@@ -1,13 +1,4 @@
-import {
-  Button,
-  Group,
-  NumberInput,
-  Paper,
-  Select,
-  Stack,
-  TextInput,
-  Modal,
-} from "@mantine/core";
+import { Button, Group, Paper, Select, Modal } from "@mantine/core";
 import { DateInput, DatePicker, DatePickerInput } from "@mantine/dates";
 import "@mantine/dates/styles.css";
 import { useForm } from "@mantine/form";
@@ -30,8 +21,9 @@ interface StaffState {
 }
 
 interface SelectedStaffState {
-  _id: string | null;
+  staffId: string | null;
   role: string | null;
+  // name: string | null;
 }
 
 function AddShift() {
@@ -42,6 +34,7 @@ function AddShift() {
   const [filteredStaff, setFilteredStaff] = useState<StaffState[]>([]);
   const [role, setRole] = useState<string | null>("");
   const [staffId, setStaffId] = useState<string | null>("");
+  const [staffName, setStaffName] = useState<string | null>("");
   const [opened, { open, close }] = useDisclosure(false);
 
   const form = useForm({
@@ -54,31 +47,39 @@ function AddShift() {
 
   // submit form to the database
   const handleFormSubmit = async () => {
-    console.log(form.values);
-    // const userId = localStorage.getItem("id");
-    // const roomData = { ...form.values, userId: userId };
-    // // return;
-    // try {
-    //   const response = await fetch(`${serverUrl}/room/add`, {
-    //     method: "POST",
-    //     body: JSON.stringify(roomData),
-    //     headers: { "content-type": "application/json" },
-    //   });
-    //   const data = await response.json();
-    //   if (data) {
-    //     console.log(data);
-    //     form.reset();
-    //     navigate("/rooms");
-    //   } else {
-    //     console.log("Error");
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    console.log("form submit");
+    const shiftData = { ...form.values, staff: selectedStaff };
+    console.log(shiftData);
+    // return;
+    try {
+      const response = await fetch(`${serverUrl}/shift/add`, {
+        method: "POST",
+        body: JSON.stringify(shiftData),
+        headers: { "content-type": "application/json" },
+      });
+      const data = await response.json();
+      if (data) {
+        console.log(data);
+        form.reset();
+        navigate("/shifts");
+      } else {
+        console.log("Error");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleAddStaff = () => {
-    setSelectedStaff([...selectedStaff, { _id: staffId, role: role }]);
+    // let data = filteredStaff.find((element) => {
+    //   return element._id === staffId;
+    // });
+    // let name;
+    // if (data) {
+    //    name = data.name;
+    // }
+
+    setSelectedStaff([...selectedStaff, { staffId: staffId, role: role }]);
     console.log(selectedStaff);
     close();
   };
@@ -103,15 +104,15 @@ function AddShift() {
     setFilteredStaff(data);
   }, [role]);
 
-  useEffect(() => {
-    async function getAllBuildings() {
-      const userId = localStorage.getItem("id");
-      const response = await fetch(`${serverUrl}/building/all/` + userId);
-      const buildings = await response.json();
-      setBuildings(buildings);
-    }
-    getAllBuildings();
-  }, []);
+  // useEffect(() => {
+  //   async function getAllBuildings() {
+  //     const userId = localStorage.getItem("id");
+  //     const response = await fetch(`${serverUrl}/building/all/` + userId);
+  //     const buildings = await response.json();
+  //     setBuildings(buildings);
+  //   }
+  //   getAllBuildings();
+  // }, []);
 
   return (
     <div
@@ -129,7 +130,6 @@ function AddShift() {
         }}
       >
         <h3>Add New Shift</h3>
-        {/* {form.values.type} */}
         <div>
           <Paper radius="md" p="xl">
             <form onSubmit={form.onSubmit(() => handleFormSubmit())}>
@@ -142,6 +142,7 @@ function AddShift() {
               >
                 <DatePickerInput
                   label="Pick date"
+                  valueFormat="YYYY MMM DD"
                   placeholder="Pick date"
                   {...form.getInputProps("date")}
                 />
@@ -164,6 +165,12 @@ function AddShift() {
                   {...form.getInputProps("buildingId")}
                 />
               </div>
+              {/* {selectedStaff?.map((staff) => (
+                <div>
+                  <h3>{staff.role}</h3>
+                  <h3>{staff._id}</h3>
+                </div>
+              ))} */}
               <Modal opened={opened} onClose={close} title="Add Staff">
                 <div style={{ marginBottom: "15px" }}>
                   <Select

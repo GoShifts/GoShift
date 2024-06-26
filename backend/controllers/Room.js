@@ -9,8 +9,10 @@ export const addRoom = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
+
 export const allRooms = async (req, res) => {
-  console.log("all rooms");
+  // console.log("all rooms");
   const { id } = req.params;
 
   try {

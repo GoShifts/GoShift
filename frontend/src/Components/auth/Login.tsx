@@ -13,6 +13,9 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { serverUrl } from "../../utils/common";
 import React, { useState } from "react";
+// import { useToast } from "@chakra-ui/react";
+import { Slide, toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Props {
   setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,6 +24,8 @@ interface Props {
 function LogIn({ setIsAuth }: Props) {
   const navigate = useNavigate();
   const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+  // const toast = useToast();
   const form = useForm({
     initialValues: {
       email: "",
@@ -39,6 +44,7 @@ function LogIn({ setIsAuth }: Props) {
   // Submit Form to database
   const handleFormSubmit = async () => {
     // console.log(form.values);
+    setLoading(true);
     try {
       const response = await fetch(`${serverUrl}/auth/login`, {
         method: "POST",
@@ -48,15 +54,19 @@ function LogIn({ setIsAuth }: Props) {
       const user = await response.json();
       if (user.message) {
         console.log(user.message);
-        setMsg(user.message);
+        // setMsg(user.message);
+        toast("Invalid Username or Password");
         form.reset();
+        setLoading(false);
       } else {
         localStorage.setItem("id", user.userId);
         localStorage.setItem("token", user.token);
         setIsAuth(true);
+        setLoading(false);
         navigate("/");
       }
     } catch (error) {
+      setLoading(false);
       console.log(error);
     }
   };
@@ -109,17 +119,36 @@ function LogIn({ setIsAuth }: Props) {
           </Link>
         </Stack>
 
-        <Group justify="space-between" mt="xl">
-          <Link to="/register" style={{ textDecoration: "none" }}>
+        <Group justify="end" mt="xl">
+          {/* <Link to="/register" style={{ textDecoration: "none" }}>
             <Anchor component="button" type="button" c="dimmed" size="xs">
               {"Do not have an account? Register"}
             </Anchor>
-          </Link>
-          <Button type="submit" radius="xl">
-            {"Login"}
-          </Button>
+          </Link> */}
+          {loading ? (
+            ""
+          ) : (
+            <Button type="submit" radius="xl">
+              {"Login"}
+            </Button>
+          )}
         </Group>
         {msg && <p>{msg}</p>}
+        <ToastContainer
+          position="bottom-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          // transition: Bounce,
+        />
+        {/* Same as */}
+        <ToastContainer />
       </form>
     </Paper>
   );
