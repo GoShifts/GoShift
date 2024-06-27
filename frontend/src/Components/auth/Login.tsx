@@ -31,7 +31,7 @@ function LogIn(): JSX.Element {
     },
   });
 
-  // Submit Form to database
+  // Login
   const handleFormSubmit = async (): Promise<void> => {
     console.log(form.values);
     try {

@@ -10,6 +10,7 @@ import DashboardPage from "./Pages/DashboardPage";
 import SignUpPage from "./Pages/SignUpPage";
 import LogInPage from "./Pages/LogInPage";
 import VerifyEmail from "./Components/auth/VerifyEmail";
+import StaffList from "./Pages/staffList";
 
 function App() {
   const router = createBrowserRouter([
@@ -28,6 +29,10 @@ function App() {
     {
       path: "/auth/:id/verify/:token",
       element: <VerifyEmail />,
+    },
+    {
+      path: "/staff",
+      element: <StaffList />,
     },
   ]);
   return (
