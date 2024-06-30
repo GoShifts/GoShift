@@ -1,4 +1,3 @@
-import { auth_constants } from "./constants";
 import { Button, Container } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -55,13 +54,13 @@ function VerifyEmail() {
         <Container size="xs" {...demoProps}>
           {validUrl ? (
             <>
-              <h1>{auth_constants.verifyEmail.success}</h1>
+              <h1>Email address verified successfully</h1>
               <Link to="/login" style={{ textDecoration: "none" }}>
-                <Button radius={auth_constants.buttonRadius}>{"Login"}</Button>
+                <Button radius="xl">{"Login"}</Button>
               </Link>
             </>
           ) : (
-            <h1>{auth_constants.verifyEmail.four04}</h1>
+            <h1>404 Not Found</h1>
           )}
         </Container>
       </div>

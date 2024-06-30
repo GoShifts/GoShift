@@ -9,6 +9,7 @@ import {
   Divider,
   Anchor,
   Stack,
+  Flex
 } from "@mantine/core";
 import { Link, useNavigate } from "react-router-dom";
 import { serverUrl } from "../../utils/common";
@@ -21,7 +22,7 @@ interface Props {
   setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function LogIn({ setIsAuth }: Props) {
+function LogInStaff({ setIsAuth }: Props) {
   const navigate = useNavigate();
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
@@ -46,13 +47,13 @@ function LogIn({ setIsAuth }: Props) {
     // console.log(form.values);
     setLoading(true);
     try {
-      const response = await fetch(`${serverUrl}/auth/login`, {
+      const response = await fetch(`${serverUrl}/staff/login`, {
         method: "POST",
         body: JSON.stringify(form.values),
         headers: { "content-type": "application/json" },
       });
       const user = await response.json();
-      // console.log(user)
+      console.log(user)
       // return;
 
       if (user.message) {
@@ -62,11 +63,11 @@ function LogIn({ setIsAuth }: Props) {
         form.reset();
         setLoading(false);
       } else {
-        localStorage.setItem("id", user.userId);
-        localStorage.setItem("token", user.token);
+        localStorage.setItem("staffid", user.staffId);
+        localStorage.setItem("stafftoken", user.token);
         setIsAuth(true);
         setLoading(false);
-        navigate("/");
+        navigate("/staffHomepage");
       }
     } catch (error) {
       setLoading(false);
@@ -75,9 +76,14 @@ function LogIn({ setIsAuth }: Props) {
   };
 
   return (
+    <Flex
+      justify="center"
+      align="center"
+      style={{ height: '100vh'}} // Full height of the viewport
+    >
     <Paper radius="md" p="xl">
       <Text size="lg" fw={500}>
-        Welcome to GoShift
+        Welcome to GoShift - Staff
       </Text>
 
       <Divider label="Login" labelPosition="center" my="lg" />
@@ -110,7 +116,7 @@ function LogIn({ setIsAuth }: Props) {
             }
             radius="md"
           />
-          <Link to="/forgot" style={{ textDecoration: "none" }}>
+          <Link to="/staff/forgot" style={{ textDecoration: "none" }}>
             <Anchor
               // onClick={(event) => event.preventDefault()}
               pt={2}
@@ -154,7 +160,8 @@ function LogIn({ setIsAuth }: Props) {
         <ToastContainer />
       </form>
     </Paper>
+    </Flex>
   );
 }
 
-export default LogIn;
+export default LogInStaff;

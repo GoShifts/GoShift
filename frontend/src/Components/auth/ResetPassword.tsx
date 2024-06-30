@@ -1,6 +1,5 @@
 import { useForm } from "@mantine/form";
 import {
-  TextInput,
   PasswordInput,
   Text,
   Paper,
@@ -10,21 +9,20 @@ import {
   Anchor,
   Stack,
 } from "@mantine/core";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { serverUrl } from "../../utils/common";
 import { useState } from "react";
 
-function SignUp() {
+function ResetPassword() {
+  const navigate = useNavigate();
+  const { id, token } = useParams();
   const [msg, setMsg] = useState("");
   const form = useForm({
     initialValues: {
-      email: "",
-      name: "",
       password: "",
     },
 
     validate: {
-      email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
       password: (val) =>
         val.length <= 6
           ? "Password should include at least 6 characters"
@@ -35,19 +33,19 @@ function SignUp() {
   // Submit Form to database
   const handleFormSubmit = async () => {
     console.log(form.values);
+    console.log(id);
     try {
-      const response = await fetch(`${serverUrl}/auth/register`, {
+      const response = await fetch(`${serverUrl}/auth/reset/${id}`, {
         method: "POST",
         body: JSON.stringify(form.values),
         headers: { "content-type": "application/json" },
       });
       const data = await response.json();
-      if (data) {
-        console.log(data);
-        form.reset();
+      if (data.message) {
+        console.log(data.message);
         setMsg(data.message);
-      } else {
-        console.log("Error");
+        form.reset();
+        navigate("/login");
       }
     } catch (error) {
       console.log(error);
@@ -55,39 +53,20 @@ function SignUp() {
   };
 
   return (
+    
     <Paper radius="md" p="xl">
       <Text size="lg" fw={500}>
-        Welcome to GoShift
+        Reset Password
       </Text>
-      <Divider label="Register" labelPosition="center" my="lg" />
+
+      <Divider my="lg" />
+
       <form onSubmit={form.onSubmit(() => handleFormSubmit())}>
         <Stack>
-          <TextInput
-            label="Name"
-            placeholder="Your name"
-            value={form.values.name}
-            onChange={(event) =>
-              form.setFieldValue("name", event.currentTarget.value)
-            }
-            radius="md"
-          />
-
-          <TextInput
-            required
-            label="Email"
-            placeholder="hello@mantine.dev"
-            value={form.values.email}
-            onChange={(event) =>
-              form.setFieldValue("email", event.currentTarget.value)
-            }
-            error={form.errors.email && "Invalid email"}
-            radius="md"
-          />
-
           <PasswordInput
             required
-            label="Password"
-            placeholder="Your password"
+            label="Enter New Password"
+            placeholder="Enter new password"
             value={form.values.password}
             onChange={(event) =>
               form.setFieldValue("password", event.currentTarget.value)
@@ -97,23 +76,25 @@ function SignUp() {
               "Password should include at least 6 characters"
             }
             radius="md"
+            
           />
         </Stack>
-
-        <Group justify="space-between" mt="xl">
-          <Link to="/login" style={{ textDecoration: "none" }}>
+          
+        <Group justify="right" mt="xl">                                      
+          {/* <Link to="/" style={{ textDecoration: "none" }}>
             <Anchor component="button" type="button" c="dimmed" size="xs">
-              {"Already have an account? Login"}
+              {"Do not have an account? Register"}
             </Anchor>
-          </Link>
+          </Link> */}
           <Button type="submit" radius="xl">
-            {"Register"}
+            {"Update"}
           </Button>
         </Group>
         {msg && <p>{msg}</p>}
       </form>
     </Paper>
+    
   );
 }
 
-export default SignUp;
+export default ResetPassword;
