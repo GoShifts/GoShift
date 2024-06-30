@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 import Staff from "./Staff.js";
 import Building from "./Building.js";
+import Room from "./Room.js";
 
 const shiftSchema = new Schema(
   {
@@ -10,6 +11,10 @@ const shiftSchema = new Schema(
     buildingId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: Building,
+    },
+    roomId: { // New field for referencing Room
+      type: mongoose.Schema.Types.ObjectId,
+      ref: Room,
     },
     staff: [
       {

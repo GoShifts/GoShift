@@ -1,16 +1,46 @@
 import Shift from "../models/Shift.js";
 
 export const addShift = async (req, res) => {
-  console.log(req.body);
-  // return
-  try {
-    const room = await new Shift(req.body).save();
+  const { date, time, buildingId, roomId, staff } = req.body;
 
-    res.status(200).json(room);
+  try {
+    // Check if there's already a shift in the same building and room at the specified date and time
+    const existingShift = await Shift.findOne({
+      date: { $eq: date },
+      time: { $eq: time },
+      buildingId: { $eq: buildingId },
+      roomId: { $eq: roomId },
+    });
+    
+    // return res.status(400).json({ error: date + time + buildingId + roomId});
+
+    if (existingShift) {
+      return res.status(400).json({ error: "Room is already allocated at that date and time in this building." });
+    }
+
+    // Check staff availability
+    for (const member of staff) {
+      const existingStaffShift = await Shift.findOne({
+        date: { $eq: date },
+        time: { $eq: time },
+        "staff.staffId": { $eq: member.staffId },
+      }).populate('staff.staffId', 'name');
+
+      if (existingStaffShift) {
+          const staffMember = existingStaffShift.staff.find(staffEntry => staffEntry.staffId._id.equals(member.staffId));
+      const staffName = staffMember.staffId.name;
+        return res.status(400).json({ error: `${staffName} is already allocated at that date and time.` });
+      }
+    }
+
+    // All checks passed, create the shift
+    const newShift = await new Shift(req.body).save();
+    res.status(200).json(newShift);
   } catch (error) {
     res.status(500).send(error);
   }
 };
+
 
 export const allShifts = async (req, res) => {
   try {
@@ -50,6 +80,7 @@ export const findShiftById = async (req, res) => {
   try {
     const shifts = await Shift.find({ _id: id })
       .populate("buildingId", "name -_id")
+      .populate("roomId", "number -_id")
       .populate({
         path: "staff.staffId",
         select: "name role",
@@ -60,6 +91,7 @@ export const findShiftById = async (req, res) => {
     const modifiedShifts = shifts.map((shift) => ({
       ...shift.toObject(),
       buildingId: shift.buildingId.name,
+      roomId:shift.roomId? shift.roomId.number : "No Specified",
     }));
 
     // modify date to local date format

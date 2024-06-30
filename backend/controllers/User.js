@@ -36,42 +36,36 @@ export const registerUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-  //   console.log(req.body);
   try {
     const { email, password } = req.body;
+    
     const user = await User.findOne({ email });
-    if (user && (await user.matchPassword(password))) {
-      // if (!user.verified) {
-      //   let token = await Token.findOne({ userId: user._id });
-      //   if (!token) {
-      //     token = await new Token({
-      //       userId: user._id,
-      //       token: crypto.randomBytes(32).toString("hex"),
-      //     }).save();
-      //     const url = `${process.env.BASE_URL}auth/${user.id}/verify/${token.token}`;
-      //     await sendEmail(user.email, "Verify Email", url);
-      //   }
+    
+    
+    // return res.status(200).json({ message: "Invalid Username or Password"+user.password+ password});
+    
+    
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email" });
+    }
 
-      //   return res
-      //     .status(400)
-      //     .send({ message: "An Email sent to your account please verify" });
-      // }
-
-      ///////
-      // console.log(user);
+    const result = await bcrypt.compare(password, user.password);
+    
+    // return res.status(200).json(result);
+    
+    if (user && result) {
       res.status(201).json({
         userId: user._id,
         token: generateToken(user._id),
-        // message: "Loged in Successfull",
       });
     } else {
-      // console.log("Invalid");
       res.status(401).json({ message: "Invalid Username or Password" });
     }
   } catch (error) {
-    res.status(500).json("catch " + error);
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 };
+
 
 export const verifyToken = async (req, res) => {
   console.log(req.params);
@@ -116,23 +110,31 @@ export const forgotPassword = async (req, res) => {
       return res.send({ message: "User not existed" });
     }
     
-    // res.send({ message: "therefor" });
-    // const userId = user._id.toString();
-    console.log("before token");
-    // // console.log(userId);
-    const token = await new Token({
-      userId: user._id,
-      token: crypto.randomBytes(32).toString("hex"),
-    });
-    
-    await token.save();
-    console.log("after token");
-    console.log(token);
-    res.send({ message: "therefor1" });
-    const url = `${environment.BASE_URL}reset/${user._id}/${token.token}`;
+    const url = `${environment.BASE_URL}reset/${user._id}`;
     await sendEmail(user.email, "Reset Password", url);
     return res
-      .status(400)
+      .status(200)
+      .send({ message: "An Email sent to your account please verify" });
+  } catch (error) {
+    res.status(500).send({ message: "Error Occured! try again" });
+  }
+};
+
+
+
+export const staffforgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    console.log(user);
+    if (!user) {
+      return res.send({ message: "User not existed" });
+    }
+    
+    const url = `${environment.BASE_URL}reset/staff/${user._id}`;
+    await sendEmail(user.email, "Reset Password", url);
+    return res
+      .status(200)
       .send({ message: "An Email sent to your account please verify" });
   } catch (error) {
     res.status(500).send({ message: "Error Occured! try again" });
@@ -145,40 +147,68 @@ export const resetPassword = async (req, res) => {
     console.log("try");
     const { id } = req.params;
     const { password } = req.body;
-    // console.log(id);
-    // console.log(req.params.token);
-    // console.log(password);
-    const token = await Token.findOne({
-      userId: id,
-      token: req.params.token,
-    });
-    console.log(token);
-    if (!token) {
-      // console.log("if");
-      return res.status(500).send(err);
-    } else {
+
       // console.log("else");
       const salt = await bcrypt.genSalt(10);
       const newPassword = await bcrypt.hash(password, salt);
+      
+      
 
-      const user = User.findByIdAndUpdate(
-        { _id: id },
-        { password: newPassword },
-        {
-          new: true,
-        }
-      );
+       // Update the user's password
+    const user = await User.findByIdAndUpdate(
+      id,
+      { password: newPassword },
+      { new: true }
+    );
+      
       console.log(user);
       if (user) {
         // console.log("updated if");
-        res.status(200).send({ message: "Password Updated Successfully" });
+        res.status(200).send({ message: "Password Updated Successfully"});
       } else {
         // console.log("updated else");
         res.status(500).send(err);
       }
-    }
+    
   } catch (error) {
     console.log("catch");
     res.status(500).send({ message: "Error Occured! try again" });
   }
 };
+
+export const satffresetPassword = async (req, res) => {
+  // console.log("reset password");
+  try {
+    console.log("try");
+    const { id } = req.params;
+    const { password } = req.body;
+
+    //   // console.log("else");
+    //   const salt = await bcrypt.genSalt(10);
+    //   const newPassword = await bcrypt.hash(password, salt);
+      const newPass= password;
+      
+
+       // Update the user's password
+    const user = await User.findByIdAndUpdate(
+      id,
+      { password: newPass },
+      { new: true }
+    );
+      
+      console.log(user);
+      if (user) {
+        // console.log("updated if");
+        res.status(200).send({ message: "Password Updated Successfully"});
+      } else {
+        // console.log("updated else");
+        res.status(500).send(err);
+      }
+    
+  } catch (error) {
+    console.log("catch");
+    res.status(500).send({ message: "Error Occured! try again" });
+  }
+};
+
+

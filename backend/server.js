@@ -6,6 +6,10 @@ import buildingRouter from "./routes/Building.js";
 import roomRouter from "./routes/Room.js";
 import staffRouter from "./routes/Staff.js";
 import shiftRouter from "./routes/Shift.js";
+import purchaseRoutes from "./routes/Purchase.js";
+import sellRoutes from './routes/Sell.js';
+import dashRoutes from './routes/dashboard.js';
+
 import cors from "cors";
 import environment from "./utils/environment.js";
 
@@ -28,6 +32,9 @@ app.use("/building", buildingRouter);
 app.use("/room", roomRouter);
 app.use("/staff", staffRouter);
 app.use("/shift", shiftRouter);
+app.use('/purchase', purchaseRoutes);
+app.use('/sell', sellRoutes);
+app.use('/', dashRoutes);
 
 const port = environment.PORT || 8000;
 app.listen(port, () => {

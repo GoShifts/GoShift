@@ -9,19 +9,19 @@ const userSchema = new Schema(
     password: { type: String, required: true },
     role: { type: String, required: true, default: "owner" },
     verified: { type: Boolean, default: true },
-  }
-  //   { timestamps: true }
+  },
+  { timestamps: true }
 );
 
-// userSchema.index({ email: 1 }, { unique: true });
-
 userSchema.pre("save", async function (next) {
-  if (!this.isModified) {
-    next();
+  if (!this.isModified('password')) {
+    return next();
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
+
 
 userSchema.methods.matchPassword = async function (password) {
   return await bcrypt.compare(password, this.password);
