@@ -1,0 +1,17 @@
+.row12 {
+  display: flex;
+  justify-content: space-between;
+}
+
+.item12 {
+  width: 18%;
+}
+
+.item13 {
+  width: 49%;
+}
+
+.pieChart {
+  width: 100%;
+  display: flex;
+}
