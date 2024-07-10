@@ -1,3 +1,4 @@
+import controller_constants from "./constants.js";
 import Building from "../models/Building.js";
 
 export const addBuilding = async (req, res) => {
@@ -7,7 +8,7 @@ export const addBuilding = async (req, res) => {
     const building = await new Building(req.body).save();
     res.status(200).json(building);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send({ message: controller_constants.addBuilding500 });
   }
 };
 
@@ -21,6 +22,6 @@ export const allBuildings = async (req, res) => {
     // console.log(buildings);
     res.status(200).json(buildings);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send({ message: controller_constants.getBuilding500 });
   }
 };

@@ -1,5 +1,5 @@
 import Shift from "../models/Shift.js";
-
+import controller_constants from "./constants.js";
 export const addShift = async (req, res) => {
   console.log(req.body);
   // return
@@ -8,7 +8,7 @@ export const addShift = async (req, res) => {
 
     res.status(200).json(room);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send({ message: controller_constants.addShift500 });
   }
 };
 
@@ -39,7 +39,7 @@ export const allShifts = async (req, res) => {
     // console.log(formattedShifts);
     res.status(200).json(formattedShifts);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send({ message: controller_constants.getShift500 + error });
   }
 };
 
@@ -86,6 +86,6 @@ export const findShiftById = async (req, res) => {
     console.log(modifiedResult);
     res.status(200).json(modifiedResult);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send({ message: controller_constants.getShift500 + error });
   }
 };
