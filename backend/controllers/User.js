@@ -3,93 +3,122 @@ import Token from "../models/Token.js";
 import generateToken from "../utils/common.js";
 import crypto from "crypto";
 import sendEmail from "../utils/sendEmail.js";
+import controller_constants from "./constants.js";
+import environment from "../utils/environment.js";
+import bcrypt from "bcrypt";
+// import db from "mongo";
 
 export const registerUser = async (req, res) => {
-  console.log(req.body);
   try {
-    const newUser = new User(req.body);
-    const user = await newUser.save();
-    const token = await new Token({
+    const user = await User.create(req.body);
+    const token = await Token.create({
       userId: user._id,
       token: crypto.randomBytes(32).toString("hex"),
-    }).save();
-    const url = `${process.env.BASE_URL}auth/${user.id}/verify/${token.token}`;
+    });
+    const url = `${environment.BASE_URL}auth/${user._id}/verify/${token.token}`;
     await sendEmail(user.email, "Verify Email", url);
 
     res.status(201).send({
-      token: generateToken(user._id),
-      message: "An Email sent to your account please verify",
+      message: "Check your email for a verification link.",
     });
-    // res.status(200).json({
-    //   token: generateToken(user._id),
-    // });
   } catch (error) {
-    res.status(500).json({
-      message: "Error! try again",
-    });
+    res.status(500).json({ message: "Error occurred, please try again" });
   }
 };
 
 export const loginUser = async (req, res) => {
-  //   console.log(req.body);
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (user && (await user.matchPassword(password))) {
-      if (!user.verified) {
-        let token = await Token.findOne({ userId: user._id });
-        if (!token) {
-          token = await new Token({
-            userId: user._id,
-            token: crypto.randomBytes(32).toString("hex"),
-          }).save();
-          const url = `${process.env.BASE_URL}auth/${user.id}/verify/${token.token}`;
-          await sendEmail(user.email, "Verify Email", url);
-        }
-
-        return res
-          .status(400)
-          .send({ message: "An Email sent to your account please verify" });
-      }
-
-      ///////
-      console.log(user);
+    if (user && await user.matchPassword(password)) {
       res.status(201).json({
+        userId: user._id,
         token: generateToken(user._id),
-        // message: "Loged in Successfull",
       });
     } else {
-      res.status(401).send("Invalid Username or Password");
+      res.status(401).json({ message: "Invalid username or password" });
     }
   } catch (error) {
-    res.status(500).json("catch " + error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
 export const verifyToken = async (req, res) => {
-  console.log(req.params);
   try {
-    const user = await User.findOne({ _id: req.params.id });
-    // console.log("user" + user);
-    if (!user) return res.status(400).send({ message: "Invalid link" });
 
-    const token = await Token.findOne({
-      userId: user._id,
-      token: req.params.token,
-    });
-    // console.log("token" + token);
-    if (!token) return res.status(400).send({ message: "Invalid link" });
+    const { id, token } = req.params;
 
-    const response = await User.updateOne({ _id: user._id, verified: true });
-    console.log(response);
-    await Token.findOneAndDelete({
+    const user = await User.findOne({ _id: id });
+    if (!user) return res.status(400).send({ message: controller_constants.invalidLink });
+
+    const foundToken = await Token.findOne({
       userId: user._id,
-      token: req.params.token,
+      token,
     });
 
-    res.status(200).send({ message: "Email verified successfully" });
+    if (!foundToken) return res.status(400).send({ message: controller_constants.invalidLink });
+
+    await Promise.all([
+      User.updateOne({ _id: user._id }, { $set: { verified: true } }),
+      Token.findOneAndDelete({
+        userId: user._id,
+        token,
+      }),
+    ]);
+
+    res.status(200).send({ message: controller_constants.emailVerified });
   } catch (error) {
-    res.status(500).send({ message: "Internal Server Error" });
+    res.status(500).send({ message: controller_constants.internalServerError });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: "User does not exist" });
+    }
+
+    const token = await Token.create({
+      userId: user._id,
+      token: crypto.randomBytes(32).toString("hex"),
+    });
+
+    const resetUrl = `${environment.BASE_URL}reset/${user._id}/${token.token}`;
+    await sendEmail(user.email, "Reset Password", resetUrl);
+
+    return res.status(200).json({
+      message: "A password reset email has been sent to your account",
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Error occurred, please try again" });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { userId, token } = req.params;
+    const { password } = req.body;
+
+    const foundToken = await Token.findOneAndDelete({
+      userId,
+      token,
+    });
+
+    if (!foundToken) {
+      return res.status(404).json({ message: "Invalid token" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    await User.findByIdAndUpdate(userId, { password: hashedPassword });
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error resetting password" });
   }
 };
 

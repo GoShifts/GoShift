@@ -1,0 +1,31 @@
+
+const controller_constants = {
+    pleaseVerify: "An Email sent to your account, please verify",
+    tryAgain: "Something went wrong, please try again",
+    invalidLink: "Invalid link",
+    internalServerError: "Internal Server Error",
+    invalidCredentials: "Invalid Username or Password",
+    emailVerified: "Email verified successfully",
+    getBuilding500: "Failed to get buildings",
+    addBuilding500: "Failed to add building",
+    updateBuilding500: "Failed to update building",
+    deleteBuilding500: "Failed to delete building",
+    getFloor500: "Failed to get floors",
+    addFloor500: "Failed to add floor",
+    updateFloor500: "Failed to update floor",
+    deleteFloor500: "Failed to delete floor",
+    getRoom500: "Failed to get rooms",
+    addRoom500: "Failed to add room",
+    updateRoom500: "Failed to update room",
+    deleteRoom500: "Failed to delete room",
+    getSchedule500: "Failed to get schedule",
+    addSchedule500: "Failed to add schedule",
+    updateSchedule500: "Failed to update schedule",
+    deleteSchedule500: "Failed to delete schedule",
+    getStaff500: "Failed to get staff",
+    addStaff500: "Failed to add staff",
+    updateStaff500: "Failed to update staff",
+    deleteStaff500: "Failed to delete staff",   
+}
+
+export default controller_constants

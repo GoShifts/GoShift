@@ -10,8 +10,11 @@ import DashboardPage from "./Pages/DashboardPage";
 import SignUpPage from "./Pages/auth/SignUpPage";
 import LogInPage from "./Pages/auth/LogInPage";
 import VerifyEmail from "./Components/auth/VerifyEmail";
+
 import ForgotPasswordPage from "./Pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./Pages/auth/ResetPasswordPage";
+import StaffList from "./Pages/staffList";
+
 
 function App() {
   const router = createBrowserRouter([
@@ -33,15 +36,9 @@ function App() {
       element: <VerifyEmail />,
     },
     {
-      path: "/forgot",
-      element: <ForgotPasswordPage />,
+      path: "/staff",
+      element: <StaffList />,
     },
-    {
-      path: "/reset/:id/:token",
-      element: <ResetPasswordPage />,
-    },
-
-    // shifts routes
   ]);
   return (
     <div className="App">
