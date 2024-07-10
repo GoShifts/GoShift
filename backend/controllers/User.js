@@ -97,7 +97,6 @@ export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
-    console.log(user);
     if (!user) {
       return res.send({ message: "User not existed" });
     }

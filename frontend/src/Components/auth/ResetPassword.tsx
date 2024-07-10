@@ -32,9 +32,6 @@ function ResetPassword() {
 
   // Submit Form to database
   const handleFormSubmit = async () => {
-    console.log(form.values);
-    console.log(id);
-    console.log(token);
     try {
       const response = await fetch(`${serverUrl}/auth/reset/${id}/${token}`, {
         method: "POST",
