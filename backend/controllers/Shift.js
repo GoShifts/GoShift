@@ -74,7 +74,7 @@ export const findShiftById = async (req, res) => {
         .replace(/\//g, "-"), // Replace slashes with dashes if needed
     }));
 
-    // Extract staff name and role from the staaf Array
+    // Extract staff name and role from the staff Array
     const modifiedResult = formattedShifts.map((shift) => ({
       ...shift,
       staff: shift.staff.map((member) => ({
