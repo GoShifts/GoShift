@@ -45,6 +45,7 @@ export const loginUser = async (req, res) => {
 
 export const verifyToken = async (req, res) => {
   try {
+
     const { id, token } = req.params;
 
     const user = await User.findOne({ _id: id });
@@ -54,6 +55,7 @@ export const verifyToken = async (req, res) => {
       userId: user._id,
       token,
     });
+
     if (!foundToken) return res.status(400).send({ message: controller_constants.invalidLink });
 
     await Promise.all([
@@ -117,5 +119,67 @@ export const resetPassword = async (req, res) => {
     res.status(200).json({ message: "Password reset successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error resetting password" });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.send({ message: "User not existed" });
+    }
+    // console.log("before token");
+    // const token = await new Token({
+    //   userId: user._id,
+    //   token: crypto.randomBytes(32).toString("hex"),
+    // }).save();
+    // console.log("after token");
+    // console.log(token);
+    const url = `${process.env.BASE_URL}reset/${user.id}/${token}`;
+    await sendEmail(user.email, "Reset Password", url);
+    return res
+      .status(400)
+      .send({ message: "An Email sent to your account please verify" });
+  } catch (error) {
+    res.status(500).send({ message: "Error Occured! try again" });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  console.log("reset password");
+  try {
+    console.log("try");
+    const { id } = req.params;
+    const { password } = req.body;
+    console.log(id);
+    console.log(token);
+    console.log(password);
+    const token = await Token.findOne({
+      userId: id,
+      token: req.params.token,
+    });
+    jwt.verify(token, process.env.SECRET_KEY, (err, decode) => {
+      console.log("verify");
+      if (!token) {
+        console.log("if");
+        return res.status(500).send(err);
+      } else {
+        console.log("else");
+        const user = User.findByIdAndUpdate(id, { password: password });
+        if (user) {
+          console.log("updated if");
+
+          res.status(200).send({ message: "Password Updated Successfully" });
+        } else {
+          console.log("updated else");
+          res.status(500).send(err);
+        }
+      }
+    });
+    res.status(200).send({ message: "Password Updated Successfully" });
+  } catch (error) {
+    console.log("catch");
+    res.status(500).send({ message: "Error Occured! try again" });
   }
 };

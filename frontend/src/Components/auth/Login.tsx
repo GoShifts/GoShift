@@ -89,6 +89,16 @@ function LogIn(): JSX.Element {
             }
             radius={auth_constants.fieldRadius}
           />
+          <Link to="/forgot" style={{ textDecoration: "none" }}>
+            <Anchor
+              // onClick={(event) => event.preventDefault()}
+              pt={2}
+              fw={500}
+              fz="xs"
+            >
+              Forgot your password?
+            </Anchor>
+          </Link>
         </Stack>
 
         <Group justify="space-between" mt="xl">
